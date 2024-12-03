@@ -12,10 +12,7 @@ import javax.swing.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.poi.ss.util.CellReference;
+
 /**
  *
  * @author Alba
@@ -289,10 +286,6 @@ public class pagprincipal extends javax.swing.JFrame {
                     .addComponent(jSpinnerAsistencias, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jLabel17)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jSpinnerFaltasRecibidas, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel2Layout.createSequentialGroup()
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel10)
@@ -302,7 +295,11 @@ public class pagprincipal extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jSpinnerRebotes)
                                 .addComponent(jSpinnerRobos)
-                                .addComponent(jSpinnerPerdidas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(jSpinnerPerdidas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                            .addComponent(jLabel17)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jSpinnerFaltasRecibidas, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(127, 127, 127)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel14)
@@ -310,7 +307,7 @@ public class pagprincipal extends javax.swing.JFrame {
                     .addComponent(jLabel12)
                     .addComponent(jLabel13)
                     .addComponent(jLabel18))
-                .addGap(43, 43, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSpinnerFaltasRealizadas, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jSpinnerTaponesRecibidos, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -319,7 +316,7 @@ public class pagprincipal extends javax.swing.JFrame {
                     .addComponent(jSpinnerTaponesFavor, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(147, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(358, 358, 358)
+                .addGap(342, 342, 342)
                 .addComponent(BotonCalcular, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -525,68 +522,111 @@ public class pagprincipal extends javax.swing.JFrame {
                                int taponesRecibidos, int faltasRealizadas, double tsPorcentaje, double porcentajeFG, double porcentajeEFG,
                                int resultado) throws IOException {
 
-       // Crea un archivo de Excel si no existe
-        Workbook libroTrabajo;
-        File archivo = new File(nombreArchivo);
-        if (archivo.exists()) {
-            libroTrabajo = new XSSFWorkbook(new FileInputStream(archivo));
-        } else {
-            libroTrabajo = new XSSFWorkbook();
-        }
+        // Crea un archivo de Excel si no existe
+    Workbook libroTrabajo;
+    File archivo = new File(nombreArchivo);
+    if (archivo.exists()) {
+        libroTrabajo = new XSSFWorkbook(new FileInputStream(archivo));
+    } else {
+        libroTrabajo = new XSSFWorkbook();
+    }
 
-        // Hoja "Medias"
-        Sheet hojaMedias = libroTrabajo.getSheet("Medias");
-        if (hojaMedias == null) {
-            hojaMedias = libroTrabajo.createSheet("Medias");
-            String[] encabezadoMedias = {"Jugador", "Promedio Puntos", "Promedio Rebotes", "Promedio Asistencias", "Promedio Robos", "Promedio Tapones"};
-            Row filaEncabezado = hojaMedias.createRow(0);
-            for (int i = 0; i < encabezadoMedias.length; i++) {
-                filaEncabezado.createCell(i).setCellValue(encabezadoMedias[i]);
-            }
-        }
+    // Hoja del jugador: se añade una nueva fila para cada nuevo conjunto de datos
+    Sheet hojaJugador = libroTrabajo.getSheet(nombreJugador);
+    if (hojaJugador == null) {
+        hojaJugador = libroTrabajo.createSheet(nombreJugador);
+        Row filaEncabezadoJugador = hojaJugador.createRow(0);
 
-        // Acumula la nueva información
-        int filaIndex = hojaMedias.getPhysicalNumberOfRows();
-        Row filaMedia = hojaMedias.createRow(filaIndex);
-        filaMedia.createCell(0).setCellValue(nombreJugador);
-        filaMedia.createCell(1).setCellValue(puntosTotales);
-        filaMedia.createCell(2).setCellValue(rebotes);
-        filaMedia.createCell(3).setCellValue(asistencias);
-        filaMedia.createCell(4).setCellValue(robos);
-        filaMedia.createCell(5).setCellValue(taponesFavor);
-
-        // Hoja del jugador
-        Sheet hojaJugador = libroTrabajo.createSheet(nombreJugador);
-        
+        // Encabezados de la hoja del jugador
         String[] columnas = {"Tiros Realizados", "Tiros Metidos 2", "Tiros Metidos 3", "Tiros Libres Hechos", "Tiros Libres Metidos",
                 "Puntos Totales", "Asistencias", "Robos", "Rebotes", "Tapones Favor", "Faltas Recibidas", "Tiros Campo Fallados",
                 "Tiros Libres Fallados", "Perdidas", "Tapones Recibidos", "Faltas Realizadas", "TS%", "%FG", "%eFG", "Resultado"};
-        
-        Row filaEncabezadoJugador = hojaJugador.createRow(0);
-       
+
         for (int i = 0; i < columnas.length; i++) {
             filaEncabezadoJugador.createCell(i).setCellValue(columnas[i]);
         }
-
-        Row filaJugador = hojaJugador.createRow(1);
-        
-        Object[] datosJugador = {tirosRealizados, tirosMetidos2, tirosMetidos3, tirosLibresHechos, tirosLibresMetidos,
-                puntosTotales, asistencias, robos, rebotes, taponesFavor, faltasRecibidas, tirosCampoFallados,
-                tirosLibresFallados, perdidas, taponesRecibidos, faltasRealizadas, tsPorcentaje, porcentajeFG, porcentajeEFG, resultado};
-
-        for (int i = 0; i < datosJugador.length; i++) {
-            if (datosJugador[i] instanceof Integer) {
-                filaJugador.createCell(i).setCellValue((Integer) datosJugador[i]);
-            } else if (datosJugador[i] instanceof Double) {
-                filaJugador.createCell(i).setCellValue((Double) datosJugador[i]);
-            }
-        }
-
-        // Guarda el archivo
-        FileOutputStream archivoSalida = new FileOutputStream(new File(nombreArchivo));
-        libroTrabajo.write(archivoSalida);
-        archivoSalida.close();
     }
+
+    // Encuentra la próxima fila vacía para agregar nuevos datos
+    int filaJugadorIndex = hojaJugador.getPhysicalNumberOfRows();
+    Row filaJugador = hojaJugador.createRow(filaJugadorIndex);
+
+    Object[] datosJugador = {tirosRealizados, tirosMetidos2, tirosMetidos3, tirosLibresHechos, tirosLibresMetidos,
+            puntosTotales, asistencias, robos, rebotes, taponesFavor, faltasRecibidas, tirosCampoFallados,
+            tirosLibresFallados, perdidas, taponesRecibidos, faltasRealizadas, tsPorcentaje, porcentajeFG, porcentajeEFG, resultado};
+
+    for (int i = 0; i < datosJugador.length; i++) {
+        if (datosJugador[i] instanceof Integer) {
+            filaJugador.createCell(i).setCellValue((Integer) datosJugador[i]);
+        } else if (datosJugador[i] instanceof Double) {
+            filaJugador.createCell(i).setCellValue((Double) datosJugador[i]);
+        }
+    }
+
+    // Actualiza los promedios en la hoja "Medias"
+    Sheet hojaMedias = libroTrabajo.getSheet("Medias");
+    if (hojaMedias == null) {
+        hojaMedias = libroTrabajo.createSheet("Medias");
+
+        // Encabezado para la hoja "Medias"
+        String[] encabezadoMedias = {"Jugador", "Promedio Puntos", "Promedio Rebotes", "Promedio Asistencias", "Promedio Robos", "Promedio Tapones"};
+        Row filaEncabezado = hojaMedias.createRow(0);
+        for (int i = 0; i < encabezadoMedias.length; i++) {
+            filaEncabezado.createCell(i).setCellValue(encabezadoMedias[i]);
+        }
+    }
+
+    // Calcula los nuevos promedios basados en la hoja del jugador
+    int totalFilas = hojaJugador.getPhysicalNumberOfRows();
+    double sumaPuntos = 0, sumaRebotes = 0, sumaAsistencias = 0, sumaRobos = 0, sumaTapones = 0;
+
+    for (int i = 1; i < totalFilas; i++) {
+        Row fila = hojaJugador.getRow(i);
+        sumaPuntos += fila.getCell(5).getNumericCellValue();  // Puntos Totales
+        sumaRebotes += fila.getCell(8).getNumericCellValue(); // Rebotes
+        sumaAsistencias += fila.getCell(6).getNumericCellValue(); // Asistencias
+        sumaRobos += fila.getCell(7).getNumericCellValue(); // Robos
+        sumaTapones += fila.getCell(9).getNumericCellValue(); // Tapones Favor
+    }
+
+    // Calcula los promedios
+    double promedioPuntos = sumaPuntos / (totalFilas - 1);
+    double promedioRebotes = sumaRebotes / (totalFilas - 1);
+    double promedioAsistencias = sumaAsistencias / (totalFilas - 1);
+    double promedioRobos = sumaRobos / (totalFilas - 1);
+    double promedioTapones = sumaTapones / (totalFilas - 1);
+
+    // Busca la fila del jugador en la hoja "Medias" o añade una nueva
+    boolean encontrado = false;
+    for (int i = 1; i < hojaMedias.getPhysicalNumberOfRows(); i++) {
+        Row filaMedia = hojaMedias.getRow(i);
+        if (filaMedia.getCell(0).getStringCellValue().equals(nombreJugador)) {
+            filaMedia.getCell(1).setCellValue(promedioPuntos);
+            filaMedia.getCell(2).setCellValue(promedioRebotes);
+            filaMedia.getCell(3).setCellValue(promedioAsistencias);
+            filaMedia.getCell(4).setCellValue(promedioRobos);
+            filaMedia.getCell(5).setCellValue(promedioTapones);
+            encontrado = true;
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        int filaMediaIndex = hojaMedias.getPhysicalNumberOfRows();
+        Row nuevaFilaMedia = hojaMedias.createRow(filaMediaIndex);
+        nuevaFilaMedia.createCell(0).setCellValue(nombreJugador);
+        nuevaFilaMedia.createCell(1).setCellValue(promedioPuntos);
+        nuevaFilaMedia.createCell(2).setCellValue(promedioRebotes);
+        nuevaFilaMedia.createCell(3).setCellValue(promedioAsistencias);
+        nuevaFilaMedia.createCell(4).setCellValue(promedioRobos);
+        nuevaFilaMedia.createCell(5).setCellValue(promedioTapones);
+    }
+
+    // Guarda el archivo
+    FileOutputStream archivoSalida = new FileOutputStream(new File(nombreArchivo));
+    libroTrabajo.write(archivoSalida);
+    archivoSalida.close();
+}
 
 
     /**
